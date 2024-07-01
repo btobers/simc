@@ -158,6 +158,25 @@ def GetNav_akHDF(navfile, navsys, xyzsys):
     return df[["x", "y", "z", "datum"]]
 
 
+def GetNav_bsiHDF(navfile, navsys, xyzsys):
+    xformer = get_xformer(navsys, xyzsys)
+    h5 = h5py.File(navfile, "r")
+    if 'restack' in h5.keys():
+        grp = 'restack'
+    else:
+        grp = 'raw'
+    df = pd.DataFrame(h5[grp]["gps0"][:])
+    h5.close()
+    df["x"], df["y"], df["z"] = xformer.transform(
+        df["lon"].to_numpy(),
+        df["lat"].to_numpy(),
+        df["hgt"].to_numpy(),
+    )
+    df["datum"] = 0 * df["x"]
+
+    return df[["x", "y", "z", "datum"]]
+
+
 def GetNav_FPBgeom(navfile, navsys, xyzsys):
     c = 299792458
     geomCols = [
