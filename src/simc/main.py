@@ -38,7 +38,6 @@ def main():
     xform = pyproj.Transformer.from_crs(confDict["navigation"]["xyzsys"], dem.crs)
 
     nav, oDict, inv = simc.prep.prep(confDict, dem, nav)
-    print(np.count_nonzero(oDict['pwr']))
 
     bounds = simc.prep.calcBounds(
         confDict,
@@ -73,8 +72,7 @@ def main():
         # Putting things back in order
         oi = np.where(inv == i)[0]
         simc.output.build(confDict, oDict, fcalc, nav, i, oi)
-    print(np.count_nonzero(oDict['pwr']))
-    sys.exit()
+
     nav = nav.iloc[inv, :].reset_index()
     simc.output.save(confDict, oDict, nav, dem, demData, dem.crs, win)
     dem.close()
